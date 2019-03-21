@@ -57,4 +57,28 @@ public class MoviesRepository {
                     }
                 });
     }
+
+    public void getGenres(final OnGetGenresCallback callback) {
+        api.getGenres("b43279678ed8e34415dd5de62d905e9f", LANGUAGE)
+                .enqueue(new Callback<GenresResponse>() {
+                    @Override
+                    public void onResponse(Call<GenresResponse> call, Response<GenresResponse> response) {
+                        if (response.isSuccessful()) {
+                            GenresResponse genresResponse = response.body();
+                            if (genresResponse != null && genresResponse.getGenres() != null) {
+                                callback.onSuccess(genresResponse.getGenres());
+                            } else {
+                                callback.onError();
+                            }
+                        } else {
+                            callback.onError();
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<GenresResponse> call, Throwable t) {
+                        callback.onError();
+                    }
+                });
+    }
 }

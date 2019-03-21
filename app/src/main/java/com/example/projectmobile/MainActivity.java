@@ -15,6 +15,7 @@ public class MainActivity extends AppCompatActivity {
 
     private MoviesRepository moviesRepository;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -24,18 +25,39 @@ public class MainActivity extends AppCompatActivity {
 
         moviesList = findViewById(R.id.movies_list);
         moviesList.setLayoutManager(new LinearLayoutManager(this));
+        getGenres();
+    }
 
+    private void getGenres() {
+        moviesRepository.getGenres(new OnGetGenresCallback() {
+            @Override
+            public void onSuccess(List<Genre> genres) {
+                getMovies(genres);
+            }
+
+            @Override
+            public void onError() {
+                showError();
+            }
+        });
+    }
+
+    private void getMovies(final List<Genre> genres) {
         moviesRepository.getMovies(new OnGetMoviesCallback() {
             @Override
             public void onSuccess(List<Movie> movies) {
-                adapter = new MoviesAdapter(movies);
+                adapter = new MoviesAdapter(movies, genres);
                 moviesList.setAdapter(adapter);
             }
 
             @Override
             public void onError() {
-                Toast.makeText(MainActivity.this, "Please check your internet connection.", Toast.LENGTH_SHORT).show();
+                showError();
             }
         });
+    }
+
+    private void showError() {
+        Toast.makeText(MainActivity.this, "Please check your internet connection.", Toast.LENGTH_SHORT).show();
     }
 }
