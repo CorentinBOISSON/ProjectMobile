@@ -19,8 +19,10 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MovieViewH
     private String IMAGE_BASE_URL = "http://image.tmdb.org/t/p/w500";
     private List<Movie> movies;
     private List<Genre> allGenres;
+    private OnMoviesClickCallback callback;
 
-    public MoviesAdapter(List<Movie> movies, List<Genre> allGenres) {
+    public MoviesAdapter(List<Movie> movies, List<Genre> allGenres, OnMoviesClickCallback callback) {
+        this.callback = callback;
         this.movies = movies;
         this.allGenres = allGenres;
     }
@@ -47,6 +49,7 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MovieViewH
         TextView rating;
         ImageView poster;
         TextView genres;
+        Movie movie;
 
         public MovieViewHolder(View itemView) {
             super(itemView);
@@ -55,9 +58,16 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MovieViewH
             rating = itemView.findViewById(R.id.item_movie_rating);
             genres = itemView.findViewById(R.id.item_movie_genre);
             poster = itemView.findViewById(R.id.item_movie_poster);
+            itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    callback.onClick(movie);
+                }
+            });
         }
 
         public void bind(Movie movie) {
+            this.movie = movie;
             releaseDate.setText(movie.getReleaseDate().split("-")[0]);
             title.setText(movie.getTitle());
             rating.setText(String.valueOf(movie.getRating()));
@@ -81,10 +91,18 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MovieViewH
             return TextUtils.join(", ", movieGenres);
     }
 
-        public void appendMovies(List<Movie> moviesToAppend) {
-            movies.addAll(moviesToAppend);
-            notifyDataSetChanged();
-        }
+
+
+    }
+    public void appendMovies(List<Movie> moviesToAppend) {
+        movies.addAll(moviesToAppend);
+        notifyDataSetChanged();
+    }
+
+
+    public void clearMovies() {
+        movies.clear();
+        notifyDataSetChanged();
     }
 }
 
